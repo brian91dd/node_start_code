@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Debate</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<style>
+		html {
+			overflow: hidden;
+		}
+		html,body {
+			height:100%;
+			top:0;
+			padding:0;
+			margin:0;
+		}
+		.twitter-listado {
+			height:100%;
+		}
+		.twitter-listado, .pregunta-listado  {
+			background:#FFF;
+			margin-bottom:4px !important;
+		}
+		.twitter-listado h2{
+			margin:0;
+			padding:8px 8px;
+			background-color: #C0DEED;
+		}
+		.twitter-listado .allTweets{
+			padding: 10px;
+			height:100%;
+		}
+
+		.twitter-listado .singleTweet {
+			line-height: 33px;
+		}
+
+		.twitter-listado .singleTweet img{
+			border-radius: 50%;
+			width: 30px;
+			margin-right: 10px;
+		}
+		.twitter-listado .singleTweet a{
+			color: #0084B4;
+			display:inline;
+		}
+		.twitter-listado .singleTweet a:hover{
+			text-decoration: underline;
+		}
+		.twitter-listado .singleTweet a span{
+			color: #8899a6;
+			font-size: 13px;
+			display:inline;
+		}
+	</style>
+</head>
+<body>
+	<h1><%= pregunta.denominacion%></h1>
+
+	<ul>
+	<%
+	if(locals.pregunta) {
+		for (var i = 0; i < pregunta.opciones.length; i++) {
+			%>
+			<li>
+				<form action="" method="post" class="votarDebate">
+					<%= pregunta.opciones[i]['opcion']%>: <span class="cantidadVotos" data-opc="<%= pregunta.opciones[i]['opcion']%>"><%= pregunta.opciones[i]['votos']%></span>
+					<input type="hidden" name="opcion" value="<%= pregunta.opciones[i]['opcion']%>" />
+					<input type="hidden" name="id" value="<%= pregunta._id%>" />
+					<input type="submit" name="submit" value="Votar" />
+				</form>
+			</li>
+			<%
+		}
+	}
+	%>
+	</ul>
+	<div class="tweets" id="allTweets">
+
+	</div>
+	<script src="/javascripts/jquery-1.11.1.js"></script>
+	<script>
+
+		//VER COMO SEPARA EN APLICACIONES
+		var socket = io.connect('localhost:3000');
+		var cantTweets = 0;
+		var url = (window.location != window.parent.location) ? document.referrer: document.location;
+		socket.emit('getModule', {"module":["debate"],"idDebate":$(".votarDebate input[name=id]").val(),"url":url});
+		socket.on('debate_votado', function (data) {
+			$.each(data.opciones, function(index, val) {
+				$(".cantidadVotos[data-opc=" + val.opcion + "]").html(val.votos);
+			});
+		});
+		socket.on('test', function (data) {
+			console.log(data);
+		});
+		$(".votarDebate").submit(function(event) {
+			event.preventDefault();
+			var debate = {	opcion:$(this).find("input[name=opcion]").val(),
+							id:$(this).find("input[name=id]").val()};
+			socket.emit('votar_debate',debate);
+			$.ajax({
+				url: '/debate/votar_debate',
+				type: 'POST',
+				dataType: 'json',
+				data: debate,
+			})
+			.done(function(dataJson) {
+				console.log(dataJson);
+				console.log("success");
+			})
+			.fail(function(dataJson) {
+				console.log(dataJson);
+				console.log("error");
+			})
+			.always(function(dataJson) {
+				console.log(dataJson);
+				console.log("complete");
+			});
+		});
+	</script>
+</body>
+</html>
