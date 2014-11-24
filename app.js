@@ -13,7 +13,7 @@ var passport = require('passport')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var debate = require('./routes/debate');
-var login = require('./routes/login');
+var auth = require('./routes/auth');
 //END ROUTES
 
 
@@ -47,15 +47,11 @@ app.use(passport.session());
 //END CONFIGURACION DE SESSION
 // END CONFIGURACION
 
-//LOGIN STRATEGIES
-
-//END LOGIN STRATEGIES
-
 //ROUTES WITHOUT IO
 app.use('/', routes);
 app.use('/users', users);
 app.use('/debate', debate);
-app.use('/login', login); // handlers para passport, pantalla de login
+app.use('/auth', auth); // handlers para passport, pantalla de login
 //END ROUTES WITHOUT IO
 
 //START SERVER
