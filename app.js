@@ -44,6 +44,17 @@ app.use(sessionMiddleware);
 
 app.use(passport.initialize()); // Estos dos deben estar luego de setear el middleware de session sino no lo carga en req.session.passport
 app.use(passport.session());
+app.use(function(req, res, next) {
+	console.log("acaa");
+	req.session.isUserLoggedIn = function() {
+		if(typeof req.user !== 'undefined') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	next();
+});
 //END CONFIGURACION DE SESSION
 // END CONFIGURACION
 

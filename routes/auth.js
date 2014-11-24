@@ -27,7 +27,7 @@ passport.deserializeUser(function(user, done) {
 });
 
 router.get("/",function(req,res) {
-	if(typeof req.user !== 'undefined') {
+	if(req.session.isUserLoggedIn()) {
 		res.redirect("/auth/loged");
 	} else {
 		res.render("login",{ title:'Login' });
@@ -42,7 +42,7 @@ router.post('/',
 );
 
 router.get("/loged",function(req,res) {
-	if(typeof req.user === 'undefined') {
+	if(!req.session.isUserLoggedIn()) {
 		res.redirect("/auth");
 	} else {
 		res.render("loged",{ title:'Loged' });
