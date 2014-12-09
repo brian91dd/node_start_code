@@ -1,5 +1,4 @@
 var express = require('express');
-var debateModel = require('../models/debateModel.js');
 var router = express.Router();
 var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy;
@@ -47,6 +46,13 @@ router.get("/loged",function(req,res) {
 	} else {
 		res.render("loged",{ title:'Loged' });
 	}
+});
+
+router.get('/logout', function(req, res){
+  req.logout();
+  console.log(req.session);
+  //req.session.des
+  res.redirect('/');
 });
 
 
